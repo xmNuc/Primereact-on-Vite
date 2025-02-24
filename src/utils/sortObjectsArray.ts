@@ -1,9 +1,9 @@
-function sortObjectsArray<T extends Record<string, string | number | null>>(
+const sortObjectsArray = <T extends Record<string, string | number | null>>(
   array: T[],
   key: keyof T,
   order: 'asc' | 'desc' = 'asc'
-): T[] {
-  return array.sort((a, b) => {
+): T[] =>
+  array.sort((a, b) => {
     if (a[key] == null) return order === 'asc' ? 1 : -1;
     if (b[key] == null) return order === 'asc' ? -1 : 1;
 
@@ -15,7 +15,6 @@ function sortObjectsArray<T extends Record<string, string | number | null>>(
       ? (a[key] as number) - (b[key] as number)
       : (b[key] as number) - (a[key] as number);
   });
-}
 
 const data = [
   { name: 'Anna', age: 25 },
