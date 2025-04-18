@@ -34,3 +34,30 @@ export const formatTimeStringUTC = (timeUtc: string, date: string) => {
 
   return utcDate.toLocaleString(userLocale, timeOptions);
 };
+
+export const formatTimeStringDate = (timeUtc: string, date: string | Date) => {
+  const userLocale = navigator.language;
+  const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+  let dateString: string;
+  if (date instanceof Date) {
+    const year = date.getUTCFullYear();
+    const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+    const day = String(date.getUTCDate()).padStart(2, '0');
+    dateString = `${year}-${month}-${day}`;
+  } else {
+    dateString = date;
+  }
+
+  const dateTimeString = `${dateString}T${timeUtc}Z`;
+  const utcDate = new Date(dateTimeString);
+
+  const timeOptions: Intl.DateTimeFormatOptions = {
+    timeZone,
+    hour: 'numeric',
+    minute: 'numeric',
+    hour12: false,
+  };
+
+  return utcDate.toLocaleString(userLocale, timeOptions);
+};
