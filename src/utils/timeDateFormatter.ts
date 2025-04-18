@@ -21,8 +21,8 @@ export const formatTimeString = (timeUtc: string, date: string) => {
 export const formatTimeStringUTC = (timeUtc: string, date: string) => {
   const userLocale = navigator.language;
   const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-
-  const dateTimeString = `${date}T${timeUtc}Z`;
+  const pureDate = date.split(' ')[0];
+  const dateTimeString = `${pureDate}T${timeUtc}Z`;
   const utcDate = new Date(dateTimeString);
 
   const timeOptions: Intl.DateTimeFormatOptions = {
