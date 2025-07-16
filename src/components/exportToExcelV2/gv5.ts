@@ -13,13 +13,15 @@ const getExcelNumberFormatByLocale = (locale: string): string => {
   return formats[locale] || '#,##0.00'; // fallback (US)
 };
 
-function getNumFmtFromLocale(locale) {
+const getNumFmtFromLocale = (locale: string): string => {
   const number = 1234567.89;
   const formatted = new Intl.NumberFormat(locale).format(number);
 
-  const groupSep = formatted.match(/(\D)\d{3}\D/)[1];
-  const decimalSep = formatted.match(/(\D)\d{2}$/)[1];
+  const groupMatch = formatted.match(/(\D)\d{3}\D/);
+  const decimalMatch = formatted.match(/(\D)\d{2}$/);
 
-  // Excel numFmt: używamy separatorów
+  const groupSep = groupMatch?.[1] ?? ',';
+  const decimalSep = decimalMatch?.[1] ?? '.';
+
   return `#${groupSep}##0${decimalSep}00`;
-}
+};
