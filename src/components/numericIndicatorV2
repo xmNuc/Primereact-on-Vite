@@ -1,0 +1,77 @@
+/**
+ * PrimeReact DataTable formatter with inline styles and indicator mapping.
+ * - When related indicator is true => red background + white text (full-cell bleed effect).
+ * - Otherwise: white background, red text for negatives, black for >= 0.
+ * - Indicator name can be mapped internally via DEFAULT_INDICATOR_MAP or overridden via params.indicatorMap.
+ */
+export const numericPercent = <TRow extends TRowBase>({
+  rowData,
+  options,
+  locale,
+  params,
+}: IColumnBodyTemplateArgs<TRow>): string | JSX.Element | null => {
+  const field = options.field as keyof TRow;
+
+  // guard: empty cell
+  const raw = rowData[field];
+  if (raw == null) return null;
+
+  // guard: numeric or numeric-like string
+  const numValue: number | null =
+    typeof raw === 'number' && !Number.isNaN(raw)
+      ? raw
+      : !Number.isNaN(parseFloat(String(raw)))
+      ? parseFloat(String(raw))
+      : null;
+
+  if (numValue == null) {
+    console.error('not numeric data for field:[' + String(field) + ']');
+    return null;
+  }
+
+  // --- Indicator mapping
+  type IndicatorMap = Partial<Record<string, string>>;
+
+  // Internal aliases for fields that don't follow the "_indicator" convention
+  const DEFAULT_INDICATOR_MAP: IndicatorMap = {
+    d_1d: 'd_indicator',
+    mh_number: 'm_indicator',
+    y_data: 'y_indicator',
+    f_week: 'w_indicator',
+  };
+
+  // allow optional override through params
+  const userMap: IndicatorMap | undefined = (params && (params as any).indicatorMap) || undefined;
+  const map: IndicatorMap = { ...DEFAULT_INDICATOR_MAP, ...(userMap || {}) };
+
+  const indicatorKey = (map[String(field)] || `${String(field)}_indicator`) as keyof TRow;
+  const hasIndicator = rowData[indicatorKey] === true; // why: strict true, not truthy
+
+  // --- Formatting number
+  const fmtArgs: IFormatNumber = {
+    num: numValue,
+    locale,
+  };
+  if (params && Object.prototype.hasOwnProperty.call(params, 'precision')) {
+    fmtArgs.fractionDigits = (params as any).precision as number;
+  }
+  const formattedValue = formatNumber(fmtArgs);
+
+  // --- Inline styles (with bleed to color entire cell area)
+  const bleed: React.CSSProperties = {
+    display: 'block',
+    // why: negative margins mimic full-cell background without using td className
+    margin: '-0.5rem -0.75rem',
+    padding: '0.5rem 0.75rem',
+  };
+
+  const style: React.CSSProperties = hasIndicator
+    ? { ...bleed, backgroundColor: '#d32f2f', color: '#ffffff' }
+    : {
+        ...bleed,
+        backgroundColor: '#ffffff',
+        color: numValue < 0 ? '#d32f2f' : '#111111',
+      };
+
+  return <div style={style}>{`${formattedValue}%`}</div>;
+};
