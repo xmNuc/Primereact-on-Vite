@@ -41,3 +41,21 @@ export default defineConfig({
 //     },
 //   },
 // });
+
+// import { defineConfig } from 'vite';
+// import react from '@vitejs/plugin-react';
+// import { babel } from '@rolldown/plugin-babel';
+
+// export default defineConfig({
+//   plugins: [
+//     babel({
+//       include: /\.[jt]sx?$/,
+//       babelConfig: {
+//         presets: ['@babel/preset-flow'],
+//         plugins: ['@babel/plugin-transform-flow-strip-types'],
+//       },
+//     }),
+
+//     react(),
+//   ],
+// });
