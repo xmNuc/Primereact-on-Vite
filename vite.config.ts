@@ -59,3 +59,23 @@ export default defineConfig({
 //     react(),
 //   ],
 // });
+
+
+{
+      name: "remove-broken-import",
+      enforce: "pre",
+
+      transform(code, id) {
+        if (
+          id.includes(
+            "node_modules/ui"
+          ) &&
+          id.endsWith("T.js")
+        ) {
+          return code.replace(
+            `import `,
+            ""
+          );
+        }
+      },
+    },
